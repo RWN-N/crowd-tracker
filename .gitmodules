@@ -1,0 +1,6 @@
+[submodule "libs/yoloface"]
+	path = libs/yoloface
+	url = https://github.com/RWN-N/yoloface.git
+[submodule "libs/sort"]
+	path = libs/sort
+	url = https://github.com/RWN-N/sort.git

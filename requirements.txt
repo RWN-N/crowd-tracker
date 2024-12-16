@@ -4,3 +4,4 @@ numpy
 ultralytics
 fastapi
 pillow
+uvicorn
