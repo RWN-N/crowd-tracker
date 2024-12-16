@@ -7,6 +7,7 @@ from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
 
 from utils import bytes_to_image, image_to_bytes
+from facebank import facebank
 
 from core.detector import PersonFaceDetection
 from core.tracker import PersonTracker
