@@ -1,28 +1,13 @@
 import cv2
 import numpy as np
-from typing import NamedTuple, Tuple, List, Dict, TypedDict, Optional
+from typing import NamedTuple, Tuple, Dict, Optional
 from datetime import datetime, timedelta, timezone
 from pydantic import BaseModel, Field
 
 
-class Coordinate(NamedTuple):
-    x1: int
-    y1: int
-    x2: int
-    y2: int
-
-class TrackedCoordinate(NamedTuple):
-    id: int
-    coordinate: Coordinate
-
 class LocalDescriptorResult(NamedTuple):
     keypoints: Tuple[cv2.KeyPoint]
     descriptor: np.ndarray
-
-class Person(TypedDict):
-    name: str
-    images: List[np.ndarray]
-    local_descriptors: List[LocalDescriptorResult]
 
 class PersonTracker(BaseModel):
     id: int

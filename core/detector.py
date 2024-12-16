@@ -6,7 +6,7 @@ from ultralytics import YOLO
 
 from libs.sort.sort import Sort
 from libs.yoloface.face_detector import YoloDetector
-from core.tracker import Coordinate, TrackedCoordinate
+from core.utils import Coordinate, TrackedCoordinate
 
 
 class DetectPersonResult(NamedTuple):
