@@ -3,6 +3,7 @@ from typing import Dict
 from collections import Counter
 from fastapi import FastAPI, Request
 from fastapi.templating import Jinja2Templates
+from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
 
@@ -11,13 +12,14 @@ from facebank import facebank
 
 from core.detector import PersonFaceDetection
 from core.tracker import PersonTracker
-from core.recognizer import *
+from core.recognizer import sift_akaze_flann
 
 detector = PersonFaceDetection()
 CONFIDENCE_THRESHOLD = .5
 person_tracker: Dict[int, PersonTracker] = {}
 
 app = FastAPI()
+app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
 
@@ -53,22 +55,12 @@ async def process_frame(frame: FrameRequest) -> FrameResponse:
             fx1, fy1, fx2, fy2 = tracked_faces[0]
             person_face_image = person_image[fy1:fy2, fx1:fx2]
 
-            # # SIFT/ORB and FLANN
-            # person_names = face_recognition_concat(person_face_image, FACEBANK=facebank)
+            # SIFT+AKAZE
+            person_names = sift_akaze_flann.face_recognition(image_bgr=person_face_image, FACEBANK=facebank)
 
-            # # LBHP
-            # person_name, _ = face_recognition_lbph(person_face_image, CLASSES=classes)
-            # person_names = [person_name]
-
-            # # HOG + SVM
-            # person_name = face_recognition_hogsvm(person_face_image, CLASSES=classes)
-            # person_names = [person_name]
-
-            # # KNN
-            # person_name = face_recognition_knn(person_face_image, CLASSES=classes)
-            # person_names = [person_name]
+            # MBC+LTP
             
-            person_names = ["RECOGNITION IS NOT INSERTED"]
+
             person.add_persons(Counter(person_names))
 
         overlay_frame = cv2.putText(overlay_frame, f"ID: {person_id}, Name: {person.best_person()}", (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)

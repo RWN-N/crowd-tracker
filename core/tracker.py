@@ -1,13 +1,7 @@
-import cv2
-import numpy as np
-from typing import NamedTuple, Tuple, Dict, Optional
+from typing import Dict, Optional
 from datetime import datetime, timedelta, timezone
 from pydantic import BaseModel, Field
 
-
-class LocalDescriptorResult(NamedTuple):
-    keypoints: Tuple[cv2.KeyPoint]
-    descriptor: np.ndarray
 
 class PersonTracker(BaseModel):
     id: int

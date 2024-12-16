@@ -2,6 +2,7 @@ import os
 import cv2
 from typing import Dict
 
+from core.recognizer.sift_akaze_flann import preprocess_image as sift_akaze_preprocess_image, sift_descriptor_detect, akaze_descriptor_detect
 from core.utils import resize_image, Person
 
 FACEBANK_PATH = "facebank/"  # base project
@@ -19,10 +20,19 @@ for name in os.listdir(FACEBANK_PATH):
             img = cv2.imread(imgpath, None)
             img = resize_image(img, target_height=512)
             if name not in facebank:
-                facebank[name] = Person(name=name, images=[], face_images=[], local_descriptors=[])
+                facebank[name] = Person(name=name, images=[], descriptors={})
 
             facebank[name]['images'].append(img)
 
-            # img = preprocess_image(img)
-            # keypoints, descriptor = local_descriptor_detect(img)
-            # facebank[name]['local_descriptors'].append((keypoints, descriptor))
+            curr_desc = facebank[name]['descriptors']
+            # SIFT + AKAZE
+            if 'sift' not in curr_desc:
+                curr_desc['sift'] = []
+            if 'akaze' not in curr_desc:
+                curr_desc['akaze'] = []
+
+            sift_akaze_img = sift_akaze_preprocess_image(image_bgr=img)
+            sift_key, sift_desc = sift_descriptor_detect(sift_akaze_img)
+            akaze_key, akaze_desc = akaze_descriptor_detect(sift_akaze_img)
+            curr_desc['sift'].append((sift_key, sift_desc))
+            curr_desc['akaze'].append((akaze_key, akaze_desc))
