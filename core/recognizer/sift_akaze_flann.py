@@ -6,6 +6,15 @@ from core.utils import resize_image, LocalDescriptorResult, Person
 
 ### Preprocess Image
 clahe = cv2.createCLAHE(clipLimit=3.0, tileGridSize=(8, 8))
+
+def _gamma_estimation(image_bgr: np.ndarray):  # 
+    hsv = cv2.cvtColor(image_bgr, cv2.COLOR_BGR2HSV)
+    _, _, val = cv2.split(hsv)  # split into hue, sat, val [only use val]
+    mid = .5
+    mean = np.mean(val)
+    gamma = np.log(mid * 255) / np.log(mean)
+    return gamma
+
 def _adjust_gamma(image, gamma=1.0):
     invGamma = 1.0 / gamma
     table = np.array([((i / 255.0) ** invGamma) * 255 for i in np.arange(0, 256)]).astype("uint8")
@@ -15,8 +24,12 @@ def preprocess_image(image_bgr: np.ndarray, target_height: int = 256) -> np.ndar
     image_gray = cv2.cvtColor(image_bgr, cv2.COLOR_BGR2GRAY)
     image_gray = cv2.equalizeHist(image_gray)
     image_gray = cv2.GaussianBlur(image_gray, (5, 5), 0)
+    
     image_gray = clahe.apply(image_gray)
-    image_gray = _adjust_gamma(image_gray, gamma=1.2)
+
+    approx_gamma = _gamma_estimation(image_bgr=image_bgr)
+    image_gray = _adjust_gamma(image_gray, gamma=approx_gamma)
+    
     image_gray = resize_image(image_gray, target_height)
     return image_gray
 
