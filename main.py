@@ -34,7 +34,7 @@ def home(req: Request):
 
 class FrameRequest(BaseModel):
     image: str
-    recognizer: Literal["sift_akaze_flann", "mbc_ltp_knn"]
+    recognizer: Literal["sift_akaze_flann", "mbc_ltp_rf"]
 
 class FrameResponse(BaseModel):
     overlay: str
@@ -63,7 +63,7 @@ async def process_frame(frame: FrameRequest) -> FrameResponse:
             selected_recognizer = frame.recognizer
             if selected_recognizer == "sift_akaze_flann":
                 person_names = sift_akaze_flann.face_recognition(image_bgr=person_face_image, FACEBANK=facebank)
-            elif selected_recognizer == "mbc_ltp_knn":
+            elif selected_recognizer == "mbc_ltp_rf":
                 person_names = mbc_ltp_model.face_recognition(image_bgr=person_face_image, MODEL=rf_model, CLASSES=classes)
             person.add_persons(Counter(person_names))
 
