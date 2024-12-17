@@ -11,21 +11,33 @@
 <body>
 	<h1>Crowd Tracking & Recognition System</h1>
 
-	<div class="camera-container">
-		<video class="camera" id="camera" autoplay muted></video>
-		<img class="camera-overlay" id="camera-overlay" />
+	<div class="container">
+		<!-- Left container for video stream -->
+		<div class="left-container">
+			<div class="camera-container">
+				<video class="camera" id="camera" autoplay muted></video>
+				<img class="camera-overlay" id="camera-overlay" />
+			</div>
+
+			<div class="controls">
+				<button id="toggle-process">Start Processing</button>
+				<button id="reset-tracker">Reset Tracker</button>
+
+				<select id="select-recognizer">
+					<option value="sift_akaze_flann" selected>SIFT+AKAZE & FLANN</option>
+					<option value="mbc_ltp_knn">MBC+LTP & KNN</option>
+				</select>
+			</div>
+		</div>
+
+		<!-- Right container for logging -->
+		<div class="right-container">
+			<h2>Person Logs</h2>
+			<div id="person-logs" class="log-container">
+				<!-- Logs will be dynamically added here -->
+			</div>
+		</div>
 	</div>
-
-	<div class="controls">
-		<button id="toggle-process">Start Processing</button>
-		<button id="reset-tracker">Reset Tracker</button>
-
-		<select id="select-recognizer">
-			<option value="sift_akaze_flann" selected>SIFT+AKAZE & FLANN</option>
-			<option value="mbc_ltp_knn">MBC+LTP & KNN</option>
-		</select>
-	</div>
-
 	<script src="{{ url_for('static', path='script.js') }}"></script>
 </body>
 

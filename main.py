@@ -1,6 +1,7 @@
 import cv2
-from typing import Dict, Literal
+from typing import Dict, Literal, List
 from collections import Counter
+from datetime import datetime
 from fastapi import FastAPI, Request, status
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
@@ -12,14 +13,14 @@ from facebank import facebank, image_dataset, classes
 
 from core.detector import PersonFaceDetection
 from core.tracker import PersonTracker
-from core.recognizer import sift_akaze_flann, mbc_ltp_knn
+from core.recognizer import mbc_ltp_model, sift_akaze_flann
 
 detector = PersonFaceDetection()
 CONFIDENCE_THRESHOLD = .5
 person_tracker: Dict[int, PersonTracker] = {}
 
-faceRecognizerModel = mbc_ltp_knn.FaceRecognizerModel(image_dataset=image_dataset)
-knn_model = faceRecognizerModel.knn()
+faceRecognizerModel = mbc_ltp_model.FaceRecognizerModel(image_dataset=image_dataset)
+rf_model = faceRecognizerModel.randomforest()
 
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -63,15 +64,38 @@ async def process_frame(frame: FrameRequest) -> FrameResponse:
             if selected_recognizer == "sift_akaze_flann":
                 person_names = sift_akaze_flann.face_recognition(image_bgr=person_face_image, FACEBANK=facebank)
             elif selected_recognizer == "mbc_ltp_knn":
-                person_names = mbc_ltp_knn.face_recognition(image_bgr=person_face_image, MODEL=knn_model, CLASSES=classes)
+                person_names = mbc_ltp_model.face_recognition(image_bgr=person_face_image, MODEL=rf_model, CLASSES=classes)
             person.add_persons(Counter(person_names))
 
         overlay_frame = cv2.putText(overlay_frame, f"ID: {person_id}, Name: {person.best_person()}", (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
 
-
     overlay_frame[:,:,3] = (overlay_frame.max(axis=2) > 0).astype(int) * 255  # ensure conversion suitable
     overlay_frame = image_to_bytes(overlay_frame)
     return FrameResponse(overlay=overlay_frame)
+
+
+class TrackerLogResponse(BaseModel):
+    id: int
+    name: str
+    last_seen: datetime
+    confidence: float
+    last_recognized: datetime
+
+@app.get("/tracker_logging", response_model=List[TrackerLogResponse])
+def tracker_logging():
+    tracker_logs: List[TrackerLogResponse] = []
+    for person_id, tracked_person in person_tracker.items():
+        best_person_name = tracked_person.best_person()
+        tracker_log = TrackerLogResponse(
+            id=person_id,
+            name=best_person_name,
+            last_seen=tracked_person.last_seen,
+            confidence=tracked_person.confidence()[best_person_name],
+            last_recognized=tracked_person.last_updated,
+        )
+        tracker_logs.append(tracker_log)
+    return tracker_logs
+
 
 
 @app.delete("/reset_tracker", response_class=JSONResponse, status_code=status.HTTP_200_OK)

@@ -22,7 +22,7 @@ for name in os.listdir(FACEBANK_PATH):
 
             imgpath = os.path.join(namepath, imgfn)
             img = cv2.imread(imgpath, None)
-            img = resize_image(img, target_height=512)
+            img = resize_image(img, target_height=256)
             if name not in facebank:
                 facebank[name] = Person(name=name, images=[], descriptors={})
 

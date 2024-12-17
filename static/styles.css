@@ -1,8 +1,23 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
 body {
     display: flex;
     flex-direction: column;
     align-items: center;
     font-family: Arial, sans-serif;
+    padding: 20px;
+    background-color: #f5f5f5;
+}
+
+h1 {
+    margin-bottom: 20px;
+    text-align: center;
+    font-size: 24px;
 }
 
 .camera-container {
@@ -10,6 +25,9 @@ body {
     width: 640px;
     height: 480px;
     border: 2px solid black;
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: #000;
 }
 
 .camera {
@@ -31,37 +49,34 @@ body {
     display: none;
 }
 
-/* General container styling */
 .controls {
-    display: flex; /* Align items horizontally */
-    gap: 15px; /* Space between controls */
-    align-items: center; /* Vertically center items */
-    justify-content: space-around; /* Align to the left */
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    justify-content: center;
     margin-top: 15px;
     padding: 10px;
-    background-color: #f9f9f9; /* Light background for controls */
-    border: 1px solid #ddd; /* Subtle border */
-    border-radius: 8px; /* Rounded corners */
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
 }
 
-/* Button Styling */
 button {
     padding: 10px 20px;
     font-size: 16px;
     font-weight: bold;
     color: #fff;
-    background-color: #007bff; /* Blue color */
+    background-color: #007bff;
     border: none;
-    border-radius: 5px; /* Rounded corners */
+    border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s ease;
 }
 
 button:hover {
-    background-color: #0056b3; /* Darker blue on hover */
+    background-color: #0056b3;
 }
 
-/* Select Box Styling */
 select {
     padding: 8px 12px;
     font-size: 14px;
@@ -74,6 +89,50 @@ select {
 }
 
 select:hover, select:focus {
-    border-color: #007bff; /* Highlight border on focus */
+    border-color: #007bff;
 }
 
+.container {
+    display: flex;
+    gap: 20px;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 1200px;
+    margin-top: 20px;
+}
+
+.left-container {
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.right-container {
+    flex: 1;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    overflow-y: auto;
+    height: fit-content;
+}
+
+h2 {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.log-container {
+    max-height: 400px;
+    overflow-y: auto;
+    border-top: 1px solid #ccc;
+    padding-top: 10px;
+    font-size: 14px;
+}
+
+.log-entry {
+    border-bottom: 1px solid #eee;
+    padding: 5px 0;
+}
