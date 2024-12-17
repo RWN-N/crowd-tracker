@@ -1,6 +1,8 @@
 const video = document.getElementById("camera");
 const overlay = document.getElementById("camera-overlay");
 const toggleButton = document.getElementById("toggle-process");
+const recognizerSelect = document.getElementById("select-recognizer");
+const resetTrackerButton = document.getElementById("reset-tracker");
 
 let processing = false;
 let intervalId;
@@ -45,6 +47,7 @@ async function captureFrame() {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ 
                 image: frame,
+                recognizer: recognizerSelect.value,
             }),
             signal: signal,
         });
@@ -81,5 +84,21 @@ toggleButton.addEventListener("click", () => {
         currentAbortController = null;
     }
 });
+
+resetTrackerButton.addEventListener("click", async () => {
+    if (processing) {
+        alert("Please disable processing");
+        return;
+    }
+
+    try {
+        const _ = await fetch("/reset_tracker", {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+        });
+    } catch (error) {
+        console.error("Error sending frame to server:", error);
+    }
+})
 
 startVideoStream();

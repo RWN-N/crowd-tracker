@@ -1,23 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crowd Tracker</title>
-    <link rel="stylesheet" href="{{ url_for('static', path='styles.css') }}">
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Crowd Tracking & Recognition System</title>
+	<link rel="stylesheet" href="{{ url_for('static', path='styles.css') }}">
 </head>
+
 <body>
-    <h1>Crowd Tracker</h1>
+	<h1>Crowd Tracking & Recognition System</h1>
 
-    <div class="camera-container">
-        <video class="camera" id="camera" autoplay muted></video>
-        <img class="camera-overlay" id="camera-overlay" />
-    </div>
+	<div class="camera-container">
+		<video class="camera" id="camera" autoplay muted></video>
+		<img class="camera-overlay" id="camera-overlay" />
+	</div>
 
-    <div class="controls">
-        <button id="toggle-process">Start Processing</button>
-    </div>
+	<div class="controls">
+		<button id="toggle-process">Start Processing</button>
+		<button id="reset-tracker">Reset Tracker</button>
 
-    <script src="{{ url_for('static', path='script.js') }}"></script>
+		<select id="select-recognizer">
+			<option value="sift_akaze_flann" selected>SIFT+AKAZE & FLANN</option>
+			<option value="mbc_ltp_knn">MBC+LTP & KNN</option>
+		</select>
+	</div>
+
+	<script src="{{ url_for('static', path='script.js') }}"></script>
 </body>
+
 </html>

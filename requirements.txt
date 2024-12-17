@@ -5,3 +5,6 @@ ultralytics
 fastapi
 pillow
 uvicorn
+scikit-image
+scipy
+scikit-learn

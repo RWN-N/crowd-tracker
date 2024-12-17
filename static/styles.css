@@ -31,12 +31,49 @@ body {
     display: none;
 }
 
+/* General container styling */
 .controls {
-    margin-top: 10px;
+    display: flex; /* Align items horizontally */
+    gap: 15px; /* Space between controls */
+    align-items: center; /* Vertically center items */
+    justify-content: space-around; /* Align to the left */
+    margin-top: 15px;
+    padding: 10px;
+    background-color: #f9f9f9; /* Light background for controls */
+    border: 1px solid #ddd; /* Subtle border */
+    border-radius: 8px; /* Rounded corners */
 }
 
+/* Button Styling */
 button {
     padding: 10px 20px;
     font-size: 16px;
+    font-weight: bold;
+    color: #fff;
+    background-color: #007bff; /* Blue color */
+    border: none;
+    border-radius: 5px; /* Rounded corners */
     cursor: pointer;
+    transition: background-color 0.3s ease;
 }
+
+button:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+}
+
+/* Select Box Styling */
+select {
+    padding: 8px 12px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #fff;
+    cursor: pointer;
+    outline: none;
+    transition: border-color 0.3s ease;
+}
+
+select:hover, select:focus {
+    border-color: #007bff; /* Highlight border on focus */
+}
+

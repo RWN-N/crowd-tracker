@@ -1,22 +1,25 @@
 import cv2
-from typing import Dict
+from typing import Dict, Literal
 from collections import Counter
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, status
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, JSONResponse
 from pydantic import BaseModel
 
 from utils import bytes_to_image, image_to_bytes
-from facebank import facebank
+from facebank import facebank, image_dataset, classes
 
 from core.detector import PersonFaceDetection
 from core.tracker import PersonTracker
-from core.recognizer import sift_akaze_flann
+from core.recognizer import sift_akaze_flann, mbc_ltp_knn
 
 detector = PersonFaceDetection()
 CONFIDENCE_THRESHOLD = .5
 person_tracker: Dict[int, PersonTracker] = {}
+
+faceRecognizerModel = mbc_ltp_knn.FaceRecognizerModel(image_dataset=image_dataset)
+knn_model = faceRecognizerModel.knn()
 
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -30,6 +33,7 @@ def home(req: Request):
 
 class FrameRequest(BaseModel):
     image: str
+    recognizer: Literal["sift_akaze_flann", "mbc_ltp_knn"]
 
 class FrameResponse(BaseModel):
     overlay: str
@@ -55,12 +59,11 @@ async def process_frame(frame: FrameRequest) -> FrameResponse:
             fx1, fy1, fx2, fy2 = tracked_faces[0]
             person_face_image = person_image[fy1:fy2, fx1:fx2]
 
-            # SIFT+AKAZE
-            person_names = sift_akaze_flann.face_recognition(image_bgr=person_face_image, FACEBANK=facebank)
-
-            # MBC+LTP
-            
-
+            selected_recognizer = frame.recognizer
+            if selected_recognizer == "sift_akaze_flann":
+                person_names = sift_akaze_flann.face_recognition(image_bgr=person_face_image, FACEBANK=facebank)
+            elif selected_recognizer == "mbc_ltp_knn":
+                person_names = mbc_ltp_knn.face_recognition(image_bgr=person_face_image, MODEL=knn_model, CLASSES=classes)
             person.add_persons(Counter(person_names))
 
         overlay_frame = cv2.putText(overlay_frame, f"ID: {person_id}, Name: {person.best_person()}", (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
@@ -69,6 +72,16 @@ async def process_frame(frame: FrameRequest) -> FrameResponse:
     overlay_frame[:,:,3] = (overlay_frame.max(axis=2) > 0).astype(int) * 255  # ensure conversion suitable
     overlay_frame = image_to_bytes(overlay_frame)
     return FrameResponse(overlay=overlay_frame)
+
+
+@app.delete("/reset_tracker", response_class=JSONResponse, status_code=status.HTTP_200_OK)
+def reset_tracker():
+    person_tracker.clear()
+    return JSONResponse(
+        content={"message": "Person tracker has been reset successfully."},
+        status_code=status.HTTP_200_OK
+    )
+
 
 
 if __name__ == "__main__":
