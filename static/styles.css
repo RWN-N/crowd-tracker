@@ -20,6 +20,11 @@ h1 {
     font-size: 24px;
 }
 
+ol {
+    list-style-type: decimal; /* Ensure decimal numbering */
+    padding-left: 20px; /* Add padding to ensure the numbers are visible */
+}
+
 .camera-container {
     position: relative;
     width: 640px;

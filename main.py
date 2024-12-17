@@ -78,19 +78,18 @@ class TrackerLogResponse(BaseModel):
     id: int
     name: str
     last_seen: datetime
-    confidence: float
+    confidence: Dict[str, float]
     last_recognized: datetime
 
 @app.get("/tracker_logging", response_model=List[TrackerLogResponse])
 def tracker_logging():
     tracker_logs: List[TrackerLogResponse] = []
     for person_id, tracked_person in person_tracker.items():
-        best_person_name = tracked_person.best_person()
         tracker_log = TrackerLogResponse(
             id=person_id,
-            name=best_person_name,
+            name=tracked_person.best_person(),
             last_seen=tracked_person.last_seen,
-            confidence=tracked_person.confidence()[best_person_name],
+            confidence=tracked_person.confidence(),
             last_recognized=tracked_person.last_updated,
         )
         tracker_logs.append(tracker_log)

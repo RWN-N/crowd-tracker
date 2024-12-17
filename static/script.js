@@ -72,19 +72,23 @@ async function fetchLogs() {
     await fetch("/tracker_logging")
         .then(response => response.json())
         .then(data => {
-
             data.sort((a, b) => new Date(b.last_seen) - new Date(a.last_seen));
-
             personLogs.innerHTML = ""; // Clear current logs
             data.forEach(person => {
+                const top3Confidence = Object.entries(person.confidence)
+                    .slice(0, 3)
+                    .map(([name, confidence]) => `<li>${name}: ${(confidence * 100).toFixed(2)}%</li>`)
+                    .join("");
+
                 const logEntry = document.createElement("div");
                 logEntry.classList.add("log-entry");
                 logEntry.innerHTML = `
                     <strong>ID:</strong> ${person.id} <br>
                     <strong>Name:</strong> ${person.name} <br>
                     <strong>Last Seen:</strong> ${new Date(person.last_seen).toLocaleString()} <br>
-                    <strong>Confidence:</strong> ${Math.round(person.confidence * 10000) / 100}% <br>
                     <strong>Last Recognized:</strong> ${new Date(person.last_recognized).toLocaleString()} <br>
+                    <strong>Confidence:</strong> <br>
+                    <ol>${top3Confidence}</ol>
                 `;
                 personLogs.appendChild(logEntry);
             });
