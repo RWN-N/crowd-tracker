@@ -28,6 +28,7 @@ Make sure you have the following software installed before starting:
 
    Sync the submodules and recursively update them:
    ```bash
+   git submodule sync
    git submodule update --init --recursive
    ```
 
