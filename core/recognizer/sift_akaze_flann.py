@@ -7,7 +7,7 @@ from core.utils import resize_image, LocalDescriptorResult, Person
 ### Preprocess Image
 clahe = cv2.createCLAHE(clipLimit=3.0, tileGridSize=(8, 8))
 
-def _gamma_estimation(image_bgr: np.ndarray):  # 
+def _gamma_estimation(image_bgr: np.ndarray):
     hsv = cv2.cvtColor(image_bgr, cv2.COLOR_BGR2HSV)
     _, _, val = cv2.split(hsv)  # split into hue, sat, val [only use val]
     mid = .5
